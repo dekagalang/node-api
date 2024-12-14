@@ -16,6 +16,8 @@ app.use(express.json());
 
 const port = 8000;
 
+app.get("/", (req, res) => res.send("Express on Vercel"));
+
 app.get("/province", async (req, res) => {
   const url = "https://api.rajaongkir.com/starter/province";
 
