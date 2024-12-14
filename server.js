@@ -12,6 +12,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(express.json());
 
 const port = 8000;
 
@@ -86,9 +87,14 @@ app.get("/cost", async (req, res) => {
 });
 
 app.post("/cost", async (req, res) => {
-  const { origin, destination, weight, courier } = req.body;
+  // const { origin, destination, weight, courier } = req.body;
 
-  if (!origin || !destination || !weight || !courier) {
+  // if (!origin || !destination || !weight || !courier) {
+  //   return res.status(400).json({ error: "Missing required fields" });
+  // }
+  const { origin, destination } = req.body;
+
+  if (!origin || !destination) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
@@ -101,11 +107,12 @@ app.post("/cost", async (req, res) => {
         key: "f04600f9bfae98152518bf9b6cb3cc8b",
         "Content-Type": "application/x-www-form-urlencoded",
       },
+
       body: new URLSearchParams({
         origin,
         destination,
-        weight,
-        courier,
+        weight: "1000",
+        courier: "jne",
       }),
     });
 
