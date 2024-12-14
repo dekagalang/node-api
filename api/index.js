@@ -14,7 +14,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-const port = 8000;
+const port = 3000;
 
 app.get("/", (req, res) => res.send("Express on Vercel"));
 
