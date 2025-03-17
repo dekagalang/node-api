@@ -3,131 +3,65 @@ import fetch from "node-fetch";
 import cors from "cors";
 
 const app = express();
+const port = 3000;
+const API_KEY = "f04600f9bfae98152518bf9b6cb3cc8b";
+const BASE_URL = "https://api.rajaongkir.com/starter";
 
-const corsOptions = {
+app.use(cors({
   origin: true,
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
-};
-
-app.use(cors(corsOptions));
+}));
 app.use(express.json());
-
-const port = 3000;
 
 app.get("/", (req, res) => res.send("Express on Vercel"));
 
+const fetchData = async (endpoint, method = "GET", body = null) => {
+  const options = {
+    method,
+    headers: {
+      key: API_KEY,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  };
+  if (body) options.body = new URLSearchParams(body);
+
+  const response = await fetch(`${BASE_URL}/${endpoint}`, options);
+  if (!response.ok) throw new Error("Failed to fetch data");
+  return response.json();
+};
+
 app.get("/province", async (req, res) => {
-  const url = "https://api.rajaongkir.com/starter/province";
-
   try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        key: "f04600f9bfae98152518bf9b6cb3cc8b",
-      },
-    });
-
-    if (!response.ok) {
-      return res.status(500).json({ error: "Failed to fetch data" });
-    }
-
-    const data = await response.json();
+    const data = await fetchData("province");
     res.json(data);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "There was a problem with the fetch operation" });
+    res.status(500).json({ error: error.message });
   }
 });
+
 app.get("/city", async (req, res) => {
-  const url = "https://api.rajaongkir.com/starter/city";
-
   try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        key: "f04600f9bfae98152518bf9b6cb3cc8b",
-      },
-    });
-
-    if (!response.ok) {
-      return res.status(500).json({ error: "Failed to fetch data" });
-    }
-
-    const data = await response.json();
+    const data = await fetchData("city");
     res.json(data);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "There was a problem with the fetch operation" });
-  }
-});
-app.get("/cost", async (req, res) => {
-  const url = "https://api.rajaongkir.com/starter/cost";
-
-  try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        key: "f04600f9bfae98152518bf9b6cb3cc8b",
-      },
-    });
-
-    if (!response.ok) {
-      return res.status(500).json({ error: "Failed to fetch data" });
-    }
-
-    const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: "There was a problem with the fetch operation" });
+    res.status(500).json({ error: error.message });
   }
 });
 
 app.post("/cost", async (req, res) => {
-  // const { origin, destination, weight, courier } = req.body;
-
-  // if (!origin || !destination || !weight || !courier) {
-  //   return res.status(400).json({ error: "Missing required fields" });
-  // }
-  const { origin, destination } = req.body;
+  const { origin, destination, weight = "1000", courier = "jne" } = req.body;
 
   if (!origin || !destination) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
-  const url = "https://api.rajaongkir.com/starter/cost";
-
   try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        key: "f04600f9bfae98152518bf9b6cb3cc8b",
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-
-      body: new URLSearchParams({
-        origin,
-        destination,
-        weight: "1000",
-        courier: "jne",
-      }),
-    });
-
-    if (!response.ok) {
-      return res.status(500).json({ error: "Failed to fetch data" });
-    }
-
-    const data = await response.json();
+    const data = await fetchData("cost", "POST", { origin, destination, weight, courier });
     res.json(data);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "There was a problem with the fetch operation" });
+    res.status(500).json({ error: error.message });
   }
 });
 
